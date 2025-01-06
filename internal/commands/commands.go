@@ -89,12 +89,14 @@ func commandMapb(config *pokeapi.Config, param string) error {
 	return nil
 }
 func commandExplore(config *pokeapi.Config, param string) error {
+	fmt.Printf("Exploring %s...\n", param)
 	locations, err := pokeapi.GetLocationPokemons(config, param)
 	if err != nil {
 		return err
 	}
+	fmt.Println("Found Pokemon:")
 	for _, item := range locations {
-		fmt.Println(item)
+		fmt.Printf(" - %s\n", item)
 	}
 	return nil
 }

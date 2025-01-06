@@ -84,7 +84,7 @@ func GetLocationAreas(cfg *Config, mapb bool) ([]string, error) {
 	return processLocationAreaResponse(response, cfg), nil
 }
 
-func processLocationPokemonResponse(response LocationPokemonResponse, cfg *Config) []string {
+func processLocationPokemonResponse(response LocationPokemonResponse) []string {
 
 	var names []string
 	for _, item := range response.PokemonEncounters {
@@ -103,7 +103,7 @@ func GetLocationPokemons(cfg *Config, name string) ([]string, error) {
 			return nil, err
 		}
 
-		return processLocationPokemonResponse(response, cfg), nil
+		return processLocationPokemonResponse(response), nil
 	}
 
 	resp, err := http.Get(url)
@@ -129,5 +129,5 @@ func GetLocationPokemons(cfg *Config, name string) ([]string, error) {
 		return nil, err
 	}
 
-	return processLocationPokemonResponse(response, cfg), nil
+	return processLocationPokemonResponse(response), nil
 }
