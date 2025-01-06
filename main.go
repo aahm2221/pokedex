@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/aahm2221/pokedex/internal/commands"
 	"github.com/aahm2221/pokedex/internal/pokeapi"
+	"github.com/aahm2221/pokedex/internal/pokecache"
 )
 
 var cfg pokeapi.Config
@@ -15,6 +17,7 @@ func init() {
 	cfg = pokeapi.Config{
 		Next:     "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20",
 		Previous: "",
+		Cache:    pokecache.NewCache(5 * time.Second),
 	}
 }
 

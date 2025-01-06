@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/aahm2221/pokedex/internal/pokeapi"
 )
@@ -21,6 +22,11 @@ func init() {
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
+		"explore": {
+			name:        "explore [location]",
+			description: "Displays the names of the Pokemon at the given location",
+			callback:    commandExplore,
+		},
 		"map": {
 			name:        "map",
 			description: "Displays the names of the next 20 location areas in Pokemon",
@@ -34,22 +40,31 @@ func init() {
 	}
 }
 
-func commandExit(config *pokeapi.Config) error {
+func commandExit(config *pokeapi.Config, param string) error {
+	if param != "" {
+		return fmt.Errorf("invalid Parameters")
+	}
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(config *pokeapi.Config) error {
+func commandHelp(config *pokeapi.Config, param string) error {
+	if param != "" {
+		return fmt.Errorf("invalid Parameters")
+	}
 	fmt.Printf("\nWelcome to the Pokedex!\nUsage:\n\n")
-	for key, value := range commands {
-		fmt.Printf("%s: %s\n", key, value.description)
+	for _, value := range commands {
+		fmt.Printf("%s: %s\n", value.name, value.description)
 	}
 	fmt.Println()
 	return nil
 }
 
-func commandMap(config *pokeapi.Config) error {
+func commandMap(config *pokeapi.Config, param string) error {
+	if param != "" {
+		return fmt.Errorf("invalid Parameters")
+	}
 	locations, err := pokeapi.GetLocationAreas(config, false)
 	if err != nil {
 		return err
@@ -60,8 +75,21 @@ func commandMap(config *pokeapi.Config) error {
 	return nil
 }
 
-func commandMapb(config *pokeapi.Config) error {
+func commandMapb(config *pokeapi.Config, param string) error {
+	if param != "" {
+		return fmt.Errorf("invalid Parameters")
+	}
 	locations, err := pokeapi.GetLocationAreas(config, true)
+	if err != nil {
+		return err
+	}
+	for _, item := range locations {
+		fmt.Println(item)
+	}
+	return nil
+}
+func commandExplore(config *pokeapi.Config, param string) error {
+	locations, err := pokeapi.GetLocationPokemons(config, param)
 	if err != nil {
 		return err
 	}
@@ -74,15 +102,19 @@ func commandMapb(config *pokeapi.Config) error {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(config *pokeapi.Config) error
+	callback    func(config *pokeapi.Config, param string) error
 }
 
 func ExecuteCommand(input string, cfg *pokeapi.Config) error {
-	command, exists := commands[input]
+	splitInput := strings.Split(input, " ")
+	command, exists := commands[splitInput[0]]
 	if !exists {
-		return fmt.Errorf("Unknown command")
+		return fmt.Errorf("unknown command")
 	}
-	return command.callback(cfg)
+	if len(splitInput) > 1 {
+		return command.callback(cfg, splitInput[1])
+	}
+	return command.callback(cfg, "")
 }
 
 func GetCommands() map[string]cliCommand {
