@@ -18,6 +18,7 @@ func init() {
 		Next:     "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20",
 		Previous: "",
 		Cache:    pokecache.NewCache(5 * time.Second),
+		Pokemon:  make(map[string]pokeapi.Pokemon),
 	}
 }
 
